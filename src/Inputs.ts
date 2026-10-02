@@ -9,6 +9,7 @@ export interface Inputs {
     readonly deleteExistingRelease: boolean
     readonly artifactErrorsFailBuild: boolean
     readonly artifacts: Artifact[]
+    readonly artifactsSeparator: string
     readonly commit?: string
     readonly createdDraft: boolean
     readonly createdPrerelease: boolean
@@ -62,9 +63,18 @@ export class CoreInputs implements Inputs {
             if (!contentType) {
                 contentType = "raw"
             }
-            return this.artifactGlobber.globArtifactString(artifacts, contentType, this.artifactErrorsFailBuild)
+            return this.artifactGlobber.globArtifactString(
+                artifacts,
+                contentType,
+                this.artifactErrorsFailBuild,
+                this.artifactsSeparator
+            )
         }
         return []
+    }
+
+    get artifactsSeparator(): string {
+        return core.getInput("artifactsSeparator") || ","
     }
 
     get artifactErrorsFailBuild(): boolean {

@@ -104,13 +104,24 @@ describe("Inputs", () => {
         })
     })
 
+    describe("artifactsSeparator", () => {
+        it("defaults to comma", () => {
+            expect(inputs.artifactsSeparator).toBe(",")
+        })
+
+        it("uses the configured separator", () => {
+            mockGetInput.mockReturnValue("||")
+            expect(inputs.artifactsSeparator).toBe("||")
+        })
+    })
+
     describe("artifacts", () => {
         it("globber told to throw errors", () => {
             mockGetInput.mockReturnValueOnce("art1").mockReturnValueOnce("contentType").mockReturnValueOnce("true")
 
             expect(inputs.artifacts).toEqual(artifacts)
             expect(mockGlob).toHaveBeenCalledTimes(1)
-            expect(mockGlob).toHaveBeenCalledWith("art1", "contentType", true)
+            expect(mockGlob).toHaveBeenCalledWith("art1", "contentType", true, ",")
         })
 
         it("returns empty artifacts", () => {
@@ -125,7 +136,7 @@ describe("Inputs", () => {
 
             expect(inputs.artifacts).toEqual(artifacts)
             expect(mockGlob).toHaveBeenCalledTimes(1)
-            expect(mockGlob).toHaveBeenCalledWith("art1", "contentType", false)
+            expect(mockGlob).toHaveBeenCalledWith("art1", "contentType", false, ",")
         })
 
         it("returns input.artifacts with default contentType", () => {
@@ -133,7 +144,18 @@ describe("Inputs", () => {
 
             expect(inputs.artifacts).toEqual(artifacts)
             expect(mockGlob).toHaveBeenCalledTimes(1)
-            expect(mockGlob).toHaveBeenCalledWith("art1", "raw", false)
+            expect(mockGlob).toHaveBeenCalledWith("art1", "raw", false, ",")
+        })
+
+        it("passes the configured separator to the globber", () => {
+            mockGetInput
+                .mockReturnValueOnce("index,faf||app,fff")
+                .mockReturnValueOnce("raw")
+                .mockReturnValueOnce("false")
+                .mockReturnValueOnce("||")
+
+            expect(inputs.artifacts).toEqual(artifacts)
+            expect(mockGlob).toHaveBeenCalledWith("index,faf||app,fff", "raw", false, "||")
         })
 
         it("returns input.artifact", () => {
@@ -145,7 +167,7 @@ describe("Inputs", () => {
 
             expect(inputs.artifacts).toEqual(artifacts)
             expect(mockGlob).toHaveBeenCalledTimes(1)
-            expect(mockGlob).toHaveBeenCalledWith("art2", "contentType", false)
+            expect(mockGlob).toHaveBeenCalledWith("art2", "contentType", false, ",")
         })
     })
 

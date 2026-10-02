@@ -902,6 +902,7 @@ describe("Action", () => {
                 artifactErrorsFailBuild: true,
                 deleteExistingRelease,
                 artifacts: inputArtifact,
+                artifactsSeparator: ",",
                 createdDraft: createdDraft,
                 createdReleaseBody: createdReleaseBody,
                 createdReleaseName: createName,

@@ -36343,9 +36343,12 @@ class CoreInputs {
             if (!contentType) {
                 contentType = "raw";
             }
-            return this.artifactGlobber.globArtifactString(artifacts, contentType, this.artifactErrorsFailBuild);
+            return this.artifactGlobber.globArtifactString(artifacts, contentType, this.artifactErrorsFailBuild, this.artifactsSeparator);
         }
         return [];
+    }
+    get artifactsSeparator() {
+        return getInput("artifactsSeparator") || ",";
     }
     get artifactErrorsFailBuild() {
         const allow = getInput("artifactErrorsFailBuild");
@@ -36959,8 +36962,9 @@ class FileArtifactGlobber {
     constructor(globber = new FileGlobber()) {
         this.globber = globber;
     }
-    globArtifactString(artifact, contentType, errorsFailBuild) {
-        const split = /[,\n]/;
+    globArtifactString(artifact, contentType, errorsFailBuild, separator = ",") {
+        const escapedSeparator = separator.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const split = new RegExp(`${escapedSeparator}|\\r?\\n`);
         return artifact
             .split(split)
             .map((path) => path.trimStart())

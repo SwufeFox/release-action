@@ -19,7 +19,8 @@
 | allowUpdates               | 一个可选标志，表示如果版本已经存在，我们是否应该更新它。默认值为 false。                                                                                                   | false | ""                   |
 | deleteExistingRelease       | 启用后，会先删除此标签对应的现有 Release，再创建新的 Release。不会删除 Git 标签。                                                                                                                                              | false | false                |
 | artifactErrorsFailBuild    | 一个可选标志，表示读取或上传产出文件错误时是否应该使构建失败。                                                                                                             | false | ""                   |
-| artifacts                  | 一组可选的路径，表示要上传到版本的产出文件。 这可能是单个路径或以逗号分隔的路径列表（或 globs）                                                                            | false | ""                   |
+| artifacts                  | 使用 `artifactsSeparator`（默认逗号）或换行符分隔的产物路径。                                                                                                                 | false | ""                   |
+| artifactsSeparator         | 用于分隔 `artifacts`（或旧版 `artifact`）路径的字符串，默认为 `,`；换行也会分隔路径。                                                                               | false | ","                  |
 | artifactContentType        | 产出文件的内容类型。 默认为 raw                                                                                                                                            | false | ""                   |
 | body                       | 发布的可选主体。注意：此处输入的首尾空格会被去除。如果您需要特殊的 markdown 内容，请使用 `bodyFile`。                                                                         | false | ""                   |
 | bodyFile                   | 发布的可选正文文件。 这应该是文件的路径。                                                                                                                                  | false | ""                   |

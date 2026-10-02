@@ -6,7 +6,7 @@ import { ArtifactPathValidator } from "./ArtifactPathValidator.js"
 import { PathNormalizer } from "./PathNormalizer.js"
 
 export interface ArtifactGlobber {
-    globArtifactString(artifact: string, contentType: string, errorsFailBuild: boolean): Artifact[]
+    globArtifactString(artifact: string, contentType: string, errorsFailBuild: boolean, separator?: string): Artifact[]
 }
 
 export class FileArtifactGlobber implements ArtifactGlobber {
@@ -16,8 +16,9 @@ export class FileArtifactGlobber implements ArtifactGlobber {
         this.globber = globber
     }
 
-    globArtifactString(artifact: string, contentType: string, errorsFailBuild: boolean): Artifact[] {
-        const split = /[,\n]/
+    globArtifactString(artifact: string, contentType: string, errorsFailBuild: boolean, separator = ","): Artifact[] {
+        const escapedSeparator = separator.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+        const split = new RegExp(`${escapedSeparator}|\\r?\\n`)
         return artifact
             .split(split)
             .map((path) => path.trimStart())

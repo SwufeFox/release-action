@@ -65,6 +65,16 @@ describe("ArtifactGlobber", () => {
         expect(warnMock).not.toHaveBeenCalled()
     })
 
+    it("preserves commas in paths when a custom separator is configured", () => {
+        const globber = createArtifactGlobber()
+        globMock.mockReturnValueOnce(["index,faf"]).mockReturnValueOnce(["app,fff"])
+        const expectedArtifacts = ["index,faf", "app,fff"].map((path) => new Artifact(path, contentType))
+
+        expect(globber.globArtifactString("index,faf||app,fff", "raw", false, "||")).toEqual(expectedArtifacts)
+        expect(globMock).toHaveBeenNthCalledWith(1, "index,faf")
+        expect(globMock).toHaveBeenNthCalledWith(2, "app,fff")
+    })
+
     it("splits multiple paths with new line separator and trims start", () => {
         const globber = createArtifactGlobber()
 
