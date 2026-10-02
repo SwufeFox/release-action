@@ -20,6 +20,7 @@ const applyAssetUrlsMock = vi.fn()
 const artifactDestroyMock = vi.fn()
 const createMock = vi.fn()
 const deleteMock = vi.fn()
+const deleteReleaseMock = vi.fn()
 const getMock = vi.fn()
 const listArtifactsMock = vi.fn()
 const listMock = vi.fn()
@@ -64,6 +65,7 @@ describe("Action", () => {
         shouldSkipMock.mockClear()
         updateMock.mockClear()
         uploadMock.mockClear()
+        deleteReleaseMock.mockClear()
     })
 
     it("creates release with generated release notes when no body provided", async () => {
@@ -225,6 +227,45 @@ describe("Action", () => {
             art1: "https://github.com/owner/repo/releases/download/v1.0.0/art1",
             art2: "https://github.com/owner/repo/releases/download/v1.0.0/art2",
         })
+    })
+
+    it("deletes an existing release before creating a replacement", async () => {
+        const action = createAction(false, false, false, false, false, "", false, false, undefined, undefined, true)
+
+        await action.perform()
+
+        expect(getMock).toHaveBeenCalledWith(tag)
+        expect(deleteReleaseMock).toHaveBeenCalledWith(id)
+        expect(deleteReleaseMock.mock.invocationCallOrder[0]).toBeLessThan(createMock.mock.invocationCallOrder[0])
+        expect(updateMock).not.toHaveBeenCalled()
+    })
+
+    it("deletes a matching draft release before creating a replacement", async () => {
+        const action = createAction(false, false, false, false, false, "", false, false, undefined, undefined, true)
+        getMock.mockRejectedValue({ status: 404 })
+        listMock.mockResolvedValue({
+            data: [
+                { id: 123, draft: true, tag_name: "other-tag" },
+                { id, draft: true, tag_name: tag },
+            ],
+        })
+
+        await action.perform()
+
+        expect(deleteReleaseMock).toHaveBeenCalledWith(id)
+        expect(deleteReleaseMock.mock.invocationCallOrder[0]).toBeLessThan(createMock.mock.invocationCallOrder[0])
+        expect(updateMock).not.toHaveBeenCalled()
+    })
+
+    it("creates a release without deleting when no matching release exists", async () => {
+        const action = createAction(false, false, false, false, false, "", false, false, undefined, undefined, true)
+        getMock.mockRejectedValue({ status: 404 })
+        listMock.mockResolvedValue({ data: [] })
+
+        await action.perform()
+
+        expect(deleteReleaseMock).not.toHaveBeenCalled()
+        expect(createMock).toHaveBeenCalled()
     })
 
     it("creates release if no draft releases", async () => {
@@ -791,7 +832,8 @@ describe("Action", () => {
         immutableCreate = true,
         createdDraft = createDraft,
         updatedReleaseBody = updateBody,
-        generateReleaseNotesPreviousTag: string | undefined = undefined
+        generateReleaseNotesPreviousTag: string | undefined = undefined,
+        deleteExistingRelease = false
     ): Action {
         let inputArtifact: Artifact[]
 
@@ -811,6 +853,7 @@ describe("Action", () => {
                 update: updateMock,
                 uploadArtifact: vi.fn(),
                 generateReleaseNotes: genReleaseNotesMock,
+                deleteRelease: deleteReleaseMock,
             }
         })
 
@@ -837,6 +880,7 @@ describe("Action", () => {
         listMock.mockResolvedValue({
             data: [],
         })
+        deleteReleaseMock.mockResolvedValue({})
         shouldSkipMock.mockResolvedValue(false)
         updateMock.mockResolvedValue({
             data: {
@@ -856,6 +900,7 @@ describe("Action", () => {
             return {
                 allowUpdates,
                 artifactErrorsFailBuild: true,
+                deleteExistingRelease,
                 artifacts: inputArtifact,
                 createdDraft: createdDraft,
                 createdReleaseBody: createdReleaseBody,

@@ -6,6 +6,10 @@ inputs:
     description: 'An optional flag which indicates if we should update a release if it already exists. Defaults to false.'
     required: false
     default: ''
+  deleteExistingRelease:
+    description: 'Delete any existing release for this tag before creating a new release. The Git tag itself is not deleted. Defaults to false.'
+    required: false
+    default: 'false'
   artifactErrorsFailBuild:
     description: 'An optional flag which indicates if artifact read or upload errors should fail the build.'
     required: false

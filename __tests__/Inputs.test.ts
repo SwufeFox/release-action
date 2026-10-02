@@ -82,6 +82,17 @@ describe("Inputs", () => {
         })
     })
 
+    describe("deleteExistingRelease", () => {
+        it("returns false", () => {
+            expect(inputs.deleteExistingRelease).toBe(false)
+        })
+
+        it("returns true", () => {
+            mockGetInput.mockReturnValue("true")
+            expect(inputs.deleteExistingRelease).toBe(true)
+        })
+    })
+
     describe("artifactErrorsFailBuild", () => {
         it("returns false", () => {
             expect(inputs.artifactErrorsFailBuild).toBe(false)

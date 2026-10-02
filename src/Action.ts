@@ -2,7 +2,6 @@ import * as core from "@actions/core"
 import type { ActionSkipper } from "./ActionSkipper.js"
 import type { ArtifactDestroyer } from "./ArtifactDestroyer.js"
 import type { ArtifactUploader } from "./ArtifactUploader.js"
-import { GithubError } from "./GithubError.js"
 import type { Inputs } from "./Inputs.js"
 import type { Outputs } from "./Outputs.js"
 import { ReleaseValidator } from "./ReleaseValidator.js"
@@ -51,11 +50,17 @@ export class Action {
     }
 
     private async createOrUpdateRelease() {
+        if (this.inputs.deleteExistingRelease) {
+            await this.deleteExistingRelease()
+            await this.createRelease()
+            return
+        }
+
         if (this.inputs.allowUpdates) {
             let getResponse: ReleaseByTagResponse
             try {
                 getResponse = await this.releases.getByTag(this.inputs.tag)
-            } catch (error: any) {
+            } catch (error: unknown) {
                 await this.checkForMissingReleaseError(error)
                 return
             }
@@ -69,18 +74,31 @@ export class Action {
         }
     }
 
-    private async checkForMissingReleaseError(error: Error): Promise<void> {
-        if (Action.noPublishedRelease(error)) {
+    private async deleteExistingRelease(): Promise<void> {
+        let releaseId: number | undefined
+        try {
+            const response = await this.releases.getByTag(this.inputs.tag)
+            releaseId = response.data.id
+        } catch (error: unknown) {
+            if (!(typeof error === "object" && error !== null && "status" in error && error.status === 404)) {
+                throw error
+            }
+            releaseId = await this.findMatchingDraftReleaseId()
+        }
+
+        if (releaseId !== undefined) {
+            await this.releases.deleteRelease(releaseId)
+        }
+    }
+
+    private async checkForMissingReleaseError(error: unknown): Promise<void> {
+        if (typeof error === "object" && error !== null && "status" in error && error.status === 404) {
             await this.updateDraftOrCreateRelease()
         } else {
             throw error
         }
     }
 
-    private static noPublishedRelease(error: any): boolean {
-        const githubError = new GithubError(error)
-        return githubError.status == 404
-    }
 
     private async updateDraftOrCreateRelease(): Promise<void> {
         const draftReleaseId = await this.findMatchingDraftReleaseId()

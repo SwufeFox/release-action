@@ -10,6 +10,7 @@ describe("shouldSkip", () => {
             create: vi.fn(),
             deleteArtifact: vi.fn(),
             getByTag: getMock,
+            deleteRelease: vi.fn(),
             listArtifactsForRelease: vi.fn(),
             listReleases: vi.fn(),
             update: vi.fn(),

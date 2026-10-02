@@ -11,6 +11,7 @@ export type UpdateReleaseResponse = RestEndpointMethodTypes["repos"]["updateRele
 export type UploadArtifactResponse = RestEndpointMethodTypes["repos"]["uploadReleaseAsset"]["response"]
 export type CreateOrUpdateReleaseResponse = CreateReleaseResponse | UpdateReleaseResponse
 export type GenerateReleaseNotesResponse = RestEndpointMethodTypes["repos"]["generateReleaseNotes"]["response"]
+type DeleteReleaseResponse = RestEndpointMethodTypes["repos"]["deleteRelease"]["response"]
 
 export type ReleaseData = {
     id: number
@@ -33,6 +34,8 @@ export interface Releases {
     ): Promise<CreateReleaseResponse>
 
     deleteArtifact(assetId: number): Promise<OctokitResponse<any>>
+
+    deleteRelease(releaseId: number): Promise<DeleteReleaseResponse>
 
     getByTag(tag: string): Promise<ReleaseByTagResponse>
 
@@ -101,6 +104,14 @@ export class GithubReleases implements Releases {
     async deleteArtifact(assetId: number): Promise<OctokitResponse<any>> {
         return this.git.rest.repos.deleteReleaseAsset({
             asset_id: assetId,
+            owner: this.inputs.owner,
+            repo: this.inputs.repo,
+        })
+    }
+
+    async deleteRelease(releaseId: number): Promise<DeleteReleaseResponse> {
+        return this.git.rest.repos.deleteRelease({
+            release_id: releaseId,
             owner: this.inputs.owner,
             repo: this.inputs.repo,
         })

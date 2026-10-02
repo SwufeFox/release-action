@@ -6,6 +6,7 @@ import type { ArtifactGlobber } from "./ArtifactGlobber.js"
 
 export interface Inputs {
     readonly allowUpdates: boolean
+    readonly deleteExistingRelease: boolean
     readonly artifactErrorsFailBuild: boolean
     readonly artifacts: Artifact[]
     readonly commit?: string
@@ -45,6 +46,10 @@ export class CoreInputs implements Inputs {
     get allowUpdates(): boolean {
         const allow = core.getInput("allowUpdates")
         return allow === "true"
+    }
+
+    get deleteExistingRelease(): boolean {
+        return core.getInput("deleteExistingRelease") === "true"
     }
 
     get artifacts(): Artifact[] {

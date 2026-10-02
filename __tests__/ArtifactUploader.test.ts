@@ -218,6 +218,7 @@ describe("ArtifactUploader", () => {
                 create: vi.fn(),
                 deleteArtifact: deleteMock,
                 getByTag: vi.fn(),
+                deleteRelease: vi.fn(),
                 listArtifactsForRelease: listArtifactsMock,
                 listReleases: vi.fn(),
                 update: vi.fn(),
