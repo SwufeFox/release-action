@@ -9,6 +9,7 @@ export interface Outputs {
 export class CoreOutputs implements Outputs {
     applyReleaseData(releaseData: ReleaseData) {
         core.setOutput("id", releaseData.id)
+        core.setOutput("body", releaseData.body ?? "")
         core.setOutput("html_url", releaseData.html_url)
         core.setOutput("upload_url", releaseData.upload_url)
         core.setOutput("tarball_url", releaseData.tarball_url || "")

@@ -50,6 +50,7 @@ This action will create a GitHub release and optionally upload an artifact to it
 | Output name | Description                                   |
 |-------------|-----------------------------------------------|
 | id          | The identifier of the created release.        |
+| body        | The release body, including generated release notes when enabled. |
 | html_url    | The HTML URL of the release.                  |
 | upload_url  | The URL for [uploading assets](https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28#upload-a-release-asset) to the release. |
 | tarball_url | The URL for downloading the release as a tarball (.tar.gz). |

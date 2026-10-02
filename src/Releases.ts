@@ -15,6 +15,7 @@ type DeleteReleaseResponse = RestEndpointMethodTypes["repos"]["deleteRelease"]["
 
 export type ReleaseData = {
     id: number
+    body?: string | null
     html_url: string
     upload_url: string
     tarball_url: string | null

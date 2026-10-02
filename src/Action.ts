@@ -9,6 +9,7 @@ import type {
     CreateOrUpdateReleaseResponse,
     CreateReleaseResponse,
     ReleaseByTagResponse,
+    ReleaseData,
     Releases,
     UpdateReleaseResponse,
 } from "./Releases.js"
@@ -225,7 +226,7 @@ export class Action {
         return `${body}\n${releaseNotes}`
     }
 
-    private setOutputs(releaseData: any, assetUrls: Record<string, string>): void {
+    private setOutputs(releaseData: ReleaseData, assetUrls: Record<string, string>): void {
         this.outputs.applyReleaseData(releaseData)
         this.outputs.applyAssetUrls(assetUrls)
     }

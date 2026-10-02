@@ -37105,6 +37105,7 @@ class GithubError {
 class CoreOutputs {
     applyReleaseData(releaseData) {
         setOutput("id", releaseData.id);
+        setOutput("body", releaseData.body ?? "");
         setOutput("html_url", releaseData.html_url);
         setOutput("upload_url", releaseData.upload_url);
         setOutput("tarball_url", releaseData.tarball_url || "");

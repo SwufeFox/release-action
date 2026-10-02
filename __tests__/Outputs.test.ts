@@ -19,8 +19,10 @@ describe("Outputs", () => {
 
     beforeEach(() => {
         outputs = new CoreOutputs()
+        mockSetOutput.mockClear()
         releaseData = {
             id: 1,
+            body: "generated release notes",
             html_url: TEST_URLS.HTML_URL,
             upload_url: TEST_URLS.UPLOAD_URL,
             tarball_url: TEST_URLS.TARBALL_URL,
@@ -31,21 +33,24 @@ describe("Outputs", () => {
     it("Applies the release data to the action output", () => {
         outputs.applyReleaseData(releaseData)
         expect(mockSetOutput).toHaveBeenCalledWith("id", releaseData.id)
+        expect(mockSetOutput).toHaveBeenCalledWith("body", releaseData.body)
         expect(mockSetOutput).toHaveBeenCalledWith("html_url", releaseData.html_url)
         expect(mockSetOutput).toHaveBeenCalledWith("upload_url", releaseData.upload_url)
         expect(mockSetOutput).toHaveBeenCalledWith("tarball_url", releaseData.tarball_url)
         expect(mockSetOutput).toHaveBeenCalledWith("zipball_url", releaseData.zipball_url)
     })
 
-    it("Handles null tarball_url and zipball_url", () => {
+    it("Handles null release body and URLs", () => {
         const releaseDataWithNulls = {
             ...releaseData,
             tarball_url: null,
+            body: null,
             zipball_url: null,
         }
         outputs.applyReleaseData(releaseDataWithNulls)
         expect(mockSetOutput).toHaveBeenCalledWith("tarball_url", "")
         expect(mockSetOutput).toHaveBeenCalledWith("zipball_url", "")
+        expect(mockSetOutput).toHaveBeenCalledWith("body", "")
     })
 
     it("Applies asset URLs to the action output", () => {

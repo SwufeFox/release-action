@@ -130,6 +130,8 @@ inputs:
 outputs:
   id:
     description: 'The identifier of the created release.'
+  body:
+    description: 'The release body, including generated release notes when enabled.'
   html_url:
     description: 'The HTML URL of the release.'
   upload_url:
